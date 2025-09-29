@@ -1,0 +1,3 @@
+[submodule "models/Matrix-Game-Distillation"]
+	path = models/Matrix-Game-Distillation
+	url = https://github.com/Abecid/Matrix-Game-Distillation.git
