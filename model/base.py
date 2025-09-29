@@ -6,7 +6,13 @@ import torch
 
 from pipeline import SelfForcingTrainingPipeline, BidirectionalTrainingPipeline
 from utils.loss import get_denoising_loss
-from utils.wan_wrapper import WanDiffusionWrapper, WanTextEncoder, WanVAEWrapper, WanCLIPEncoder
+# from utils.wan_wrapper import WanDiffusionWrapper, WanTextEncoder, WanVAEWrapper, WanCLIPEncoder
+
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "models", "Matrix_Game_Distillation"))
+
+from Matrix_Game_2.utils.wan_wrapper import WanDiffusionWrapper
+from Matrix_Game_2.wan.vae.wanx_vae import get_wanx_vae_wrapper
 
 
 class BaseModel(nn.Module):
@@ -43,14 +49,18 @@ class BaseModel(nn.Module):
         self.fake_score = WanDiffusionWrapper(model_name=self.fake_model_name, is_causal=False)
         self.fake_score.model.requires_grad_(True)
 
-        self.text_encoder = WanTextEncoder(model_name=self.generator_name)
-        self.text_encoder.requires_grad_(False)
+        vae = get_wanx_vae_wrapper(self.args.pretrained_model_path, torch.float16)
+        vae.requires_grad_(False)
+        vae.eval()
+        vae = vae.to(self.device, self.weight_dtype)
 
-        self.vae = WanVAEWrapper(model_name=self.generator_name)
+        # self.vae = WanVAEWrapper(model_name=self.generator_name)
+        self.vae = vae.vae
         self.vae.requires_grad_(False)
 
         if self.i2v:
-            self.image_encoder = WanCLIPEncoder(model_name=self.generator_name)
+            # self.image_encoder = WanCLIPEncoder(model_name=self.generator_name)
+            self.image_eoncder = vae.clip
             self.image_encoder.requires_grad_(False)
 
         self.scheduler = self.generator.get_scheduler()
