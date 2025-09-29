@@ -9,7 +9,7 @@ from utils.loss import get_denoising_loss
 # from utils.wan_wrapper import WanDiffusionWrapper, WanTextEncoder, WanVAEWrapper, WanCLIPEncoder
 
 import os, sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "models", "Matrix_Game_Distillation"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "models"))
 
 from Matrix_Game_2.utils.wan_wrapper import WanDiffusionWrapper
 from Matrix_Game_2.wan.vae.wanx_vae import get_wanx_vae_wrapper
